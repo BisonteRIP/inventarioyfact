@@ -8,9 +8,9 @@ import {
   Users,
 } from "lucide-react"
 
-export default function MenuBar(children){
+export default function MenuBar({ children }){
     return(
-        <Tabs>
+        <Tabs className="space-y-6">
             <TabsList className="grid w-full grid-cols-6 bg-white border border-purple-200">
                 <TabsTrigger
                 value="dashboard"

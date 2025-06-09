@@ -19,18 +19,18 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased`}
       >
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to purple-50">
+        <div className="min-h-screen bg-[#F8FFF4]">
           <div className="container mx-auto p-6">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Cuatro Catros</h1>
               <p className="text-gray-600">Sistema de Inventario y Facturacion</p>
             </div>
             <MenuBar>
-              
+              {children}
             </MenuBar>
           </div>
         </div>
-        {children}
+        
       </body>
     </html>
   );
