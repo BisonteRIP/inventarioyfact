@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased`}
       >
-        <div className="min-h-screen bg-[#F8FFF4]">
+        <div className="min-h-screen bg-[#F6f6f6]">
           <div className="container mx-auto p-6">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Cuatro Catros</h1>
