@@ -1,4 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Dashboard from "./Dashboard"
+import Clientes from "./Clientes"
 import {
   Computer,
   FileText,
@@ -8,54 +10,42 @@ import {
   Users,
 } from "lucide-react"
 
-export default function MenuBar({ children }){
+export default function MenuBar(){
     return(
-        <Tabs className="space-y-6">
+        <Tabs defaultValue="dashboard" className="space-y-6">
             <TabsList className="grid w-full grid-cols-6 bg-white border border-purple-200">
-                <TabsTrigger
-                value="dashboard"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
+                <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
                     <Settings className="w-4 h-4 mr-2" />
                     Dashboard
                 </TabsTrigger>
-                <TabsTrigger
-                value="clients"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
+                <TabsTrigger value="clients" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
                     <Users className="w-4 h-4 mr-2" />
                     Clientes
                 </TabsTrigger>
-                <TabsTrigger
-                value="inventory"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
+                <TabsTrigger value="inventory" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
                     <Package className="w-4 h-4 mr-2" />
                     Inventario
                 </TabsTrigger>
-                <TabsTrigger
-                value="invoices"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
+                <TabsTrigger value="invoices" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
                     <FileText className="w-4 h-4 mr-2" />
                     Facturas
                 </TabsTrigger>
-                <TabsTrigger
-                value="warranties"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
-                <Shield className="w-4 h-4 mr-2" />
-                Garantías
+                <TabsTrigger value="warranties" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Garantías
                 </TabsTrigger>
-                <TabsTrigger
-                value="reports"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700"
-                >
+                <TabsTrigger value="reports" className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700">
                     <Computer className="w-4 h-4 mr-2" />
                     Reportes
                 </TabsTrigger>
             </TabsList>
-            {children}
+            <TabsContent value="dashboard">
+                <Dashboard />
+            </TabsContent>
+            <TabsContent value="clients">
+                <Clientes />
+            </TabsContent>
+            {/* Agrega aquí los TabsContent para las otras pestañas */}
         </Tabs>
     )
 }

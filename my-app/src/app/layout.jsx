@@ -25,9 +25,7 @@ export default function RootLayout({ children }) {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Cuatro Catros</h1>
               <p className="text-gray-600">Sistema de Inventario y Facturacion</p>
             </div>
-            <MenuBar>
-              {children}
-            </MenuBar>
+            <MenuBar />
           </div>
         </div>
         

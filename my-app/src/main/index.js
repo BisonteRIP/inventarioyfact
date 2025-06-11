@@ -1,16 +1,24 @@
 const { app, BrowserWindow } = require('electron/main')
 const path = require('node:path')
 
-const isDev = !app.isPackaged; // <-- Agrega esto
+const isDev = !app.isPackaged;
 
 function createWindow () {
   const win = new BrowserWindow({
     width: 1400,
     height: 900,
+    minWidth: 1400,
+    minHeight: 900,
+    maxWidth: 1400,
+    maxHeight: 900,
+    resizable: false,
+    icon: path.join(__dirname, 'favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+
+    win.setMenu(null);
 
   const url = isDev
     ? 'http://localhost:3000'
