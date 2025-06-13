@@ -1,6 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Dashboard from "./Dashboard"
 import Clientes from "./Clientes"
+import Inventario from "./Inventario"
+import Facturas from "./Facturas"
 import {
   Computer,
   FileText,
@@ -45,7 +47,12 @@ export default function MenuBar(){
             <TabsContent value="clients">
                 <Clientes />
             </TabsContent>
-            {/* Agrega aquí los TabsContent para las otras pestañas */}
+            <TabsContent value="inventory">
+                <Inventario />
+            </TabsContent>
+            <TabsContent value="invoices">
+                <Facturas />
+            </TabsContent>
         </Tabs>
     )
 }
