@@ -1,5 +1,5 @@
-const { app, BrowserWindow } = require('electron/main')
-const path = require('node:path')
+const { app, BrowserWindow } = require('electron/main');
+const path = require('node:path');
 
 const isDev = !app.isPackaged;
 
@@ -32,7 +32,9 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
-  createWindow()
+  // Esto hará que tu base de datos se cree en la carpeta de usuario de Electron
+  process.env.ELECTRON_USER_DATA = app.getPath('userData');
+  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
