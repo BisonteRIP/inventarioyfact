@@ -23,6 +23,16 @@ export async function openDb() {
       direccion TEXT,
       fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    create table if not exists inventario (
+      id TEXT PRIMARY KEY,
+      producto TEXT NOT NULL,
+      descripcion TEXT,
+      categoria TEXT,
+      precio NUMERIC(10, 2) NOT NULL,
+      stock INT NOT NULL,
+      estado TEXT NOT NULL
+    );
   `);
 
   return db;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -45,47 +45,51 @@ import { Plus, Edit, Trash2, Search } from "lucide-react";
 
 export default function Inventario() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({});
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Memoria RAM DDR4 8GB",
-      category: "Componentes",
-      price: 45.99,
-      stock: 25,
-      description: "Memoria RAM de alto rendimiento para PC.",
-    },
-    {
-      id: 2,
-      name: "Servicio de Reparación",
-      category: "Servicios",
-      price: 300,
-      stock: null,
-      description: "Reparación de computadoras y laptops.",
-    },
-    {
-      id: 3,
-      name: "Disco SSD 512GB",
-      category: "Almacenamiento",
-      price: 80,
-      stock: 8,
-      description: "Disco sólido rápido y confiable.",
-    },
-  ]);
+  const [products, setProducts] = useState([]);
+  const [newProduct, setNewProduct] = useState({
+    producto: "",
+    descripcion: "",
+    categoria: "",
+    stock: "",
+    precio: "",
+    estado: "Disponible",
+  });
 
-  const addProduct = () => {
-    setProducts([
-      ...products,
-      {
-        ...newProduct,
-        id: products.length + 1,
-        price: Number.parseFloat(newProduct.price) || 0,
-        stock: newProduct.category === "Servicios" ? null : Number.parseInt(newProduct.stock) || 0,
-      },
-    ]);
-    setNewProduct({});
-    setIsProductDialogOpen(false);
-  };
+  useEffect(() => {
+    async function fetchProducts() {
+      const res = await fetch("/api/inventario");
+      const data = await res.json();
+      setProducts(data);
+    }
+    fetchProducts();
+  }, []);
+
+  async function handleSaveProducts() {
+    if (!newProduct.name || !newProduct.category || !newProduct.price || !newProduct.stock) return;
+    const res = await fetch("/api/inventario", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        producto: newProduct.name,
+        categoria: newProduct.category,
+        precio: newProduct.price,
+        stock: newProduct.stock,
+        descripcion: newProduct.description,
+      }),
+    });
+    if (res.ok) {
+      const added = await res.json();
+      setProducts((prev) => [added, ...prev]);
+      setIsProductDialogOpen(false);
+      setNewProduct({
+        name: "",
+        category: "",
+        price: "",
+        stock: "",
+        description: "",
+      });
+    }
+  }
 
   return (
     <TabsContent value="inventory" className="space-y-6">
@@ -181,7 +185,7 @@ export default function Inventario() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={addProduct} className="bg-purple-600 hover:bg-purple-700">
+                  <Button onClick={handleSaveProducts} className="bg-purple-600 hover:bg-purple-700">
                     Guardar Producto
                   </Button>
                 </DialogFooter>
@@ -214,19 +218,19 @@ export default function Inventario() {
                   <TableCell className="font-medium">{product.id}</TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.description}</p>
+                      <p className="font-medium">{product.producto}</p>
+                      <p className="text-sm text-gray-500">{product.descripcion}</p>
                     </div>
                   </TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell>{product.categoria}</TableCell>
+                  <TableCell>${product.precio.toFixed(2)}</TableCell>
                   <TableCell>
-                    {product.category === "Servicios" ? "∞" : product.stock}
+                    {product.categoria === "Servicios" ? "∞" : product.stock}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        product.category === "Servicios"
+                        product.categoria === "Servicios"
                           ? "default"
                           : product.stock > 10
                           ? "default"
@@ -235,7 +239,7 @@ export default function Inventario() {
                           : "destructive"
                       }
                       className={
-                        product.category === "Servicios"
+                        product.categoria === "Servicios"
                           ? "bg-blue-100 text-blue-700"
                           : product.stock > 10
                           ? "bg-green-100 text-green-700"
@@ -244,7 +248,7 @@ export default function Inventario() {
                           : "bg-red-100 text-red-700"
                       }
                     >
-                      {product.category === "Servicios"
+                      {product.categoria === "Servicios"
                         ? "Disponible"
                         : product.stock > 10
                         ? "En Stock"
