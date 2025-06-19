@@ -31,7 +31,8 @@ export async function openDb() {
       categoria TEXT,
       precio NUMERIC(10, 2) NOT NULL,
       stock INT NOT NULL,
-      estado TEXT NOT NULL
+      estado TEXT NOT NULL,
+      fecha_agregado TEXT
     );
   `);
 

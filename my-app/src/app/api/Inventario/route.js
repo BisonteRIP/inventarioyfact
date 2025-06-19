@@ -25,15 +25,19 @@ export async function POST(req) {
     }
     const newId = `INV${String(nextNumber).padStart(3, '0')}`;
 
+    // Fecha actual en formato ISO
+    const fecha_agregado = new Date().toISOString();
+
     await db.run(
-      `INSERT INTO inventario (id, producto, descripcion, categoria, precio, stock, estado) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO inventario (id, producto, descripcion, categoria, precio, stock, estado, fecha_agregado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       newId,
       data.producto,
       data.descripcion,
       data.categoria,
       data.precio,
       data.stock,
-      data.estado || "Disponible"
+      data.estado || "Disponible",
+      fecha_agregado
     );
 
     // Devuelve el producto recién creado
@@ -44,3 +48,4 @@ export async function POST(req) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
+
