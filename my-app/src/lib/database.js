@@ -32,7 +32,7 @@ export async function openDb() {
       precio NUMERIC(10, 2) NOT NULL,
       stock INT NOT NULL,
       estado TEXT NOT NULL,
-      fecha_agregado TEXT
+      fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 

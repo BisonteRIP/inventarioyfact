@@ -45,7 +45,8 @@ import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
 
 export default function inventario() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Para la tabla (agrupados)
+  const [movements, setMovements] = useState([]); // Para historial (todos los registros)
   const [newProduct, setNewProduct] = useState({
     producto: "",
     descripcion: "",
@@ -62,11 +63,24 @@ export default function inventario() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Al cargar productos:
   useEffect(() => {
     async function fetchProducts() {
       const res = await fetch("/api/inventario");
       const data = await res.json();
-      setProducts(data);
+      setMovements(data); // todos los registros
+      // Agrupa productos por nombre para la tabla principal
+      const grouped = Object.values(
+        data.reduce((acc, prod) => {
+          if (!acc[prod.producto]) {
+            acc[prod.producto] = { ...prod };
+          } else {
+            acc[prod.producto].stock = Number(acc[prod.producto].stock) + Number(prod.stock);
+          }
+          return acc;
+        }, {})
+      );
+      setProducts(grouped);
     }
     fetchProducts();
   }, []);
@@ -169,7 +183,6 @@ export default function inventario() {
       });
     }
   }
-
   return (
     <TabsContent value="inventory" className="space-y-6">
       <Card className="bg-white border-purple-200">
@@ -386,11 +399,6 @@ export default function inventario() {
                       </Button>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {product.fecha_agregado
-                      ? new Date(product.fecha_agregado).toLocaleDateString()
-                      : ""}
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -526,6 +534,7 @@ export default function inventario() {
           )}
         </DialogContent>
       </Dialog>
+      
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -545,7 +554,7 @@ export default function inventario() {
               <div>
                 <b>Últimos productos agregados:</b>
                 <div className="max-h-40 overflow-y-auto mt-2 border rounded p-2 bg-gray-50">
-                  {products
+                  {movements
                     .filter(p => p.fecha_agregado)
                     .sort((a, b) => new Date(b.fecha_agregado) - new Date(a.fecha_agregado))
                     .slice(0, 5)
@@ -557,7 +566,7 @@ export default function inventario() {
                         </div>
                       </div>
                     ))}
-                  {products.filter(p => p.fecha_agregado).length > 5 && (
+                  {movements.filter(p => p.fecha_agregado).length > 5 && (
                     <div className="text-center text-xs text-gray-400 mt-2">Desplázate para ver más...</div>
                   )}
                 </div>
