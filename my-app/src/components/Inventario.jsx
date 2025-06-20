@@ -62,6 +62,7 @@ export default function inventario() {
   const [editError, setEditError] = useState("");
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productHistory, setProductHistory] = useState([]);
 
   // Al cargar productos:
   useEffect(() => {
@@ -88,58 +89,42 @@ export default function inventario() {
   async function handleSaveProducts() {
     if (!newProduct.name || !newProduct.category || !newProduct.price || !newProduct.stock) return;
 
-    // Verifica si el producto ya existe
-    const existing = products.find(p => p.producto === newProduct.name);
-
-    if (existing) {
-      // Suma el stock al producto existente
-      const res = await fetch(`/api/inventario/${existing.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...existing,
-          stock: Number(existing.stock) + Number(newProduct.stock),
-        }),
+    // SIEMPRE crea un nuevo registro, aunque el nombre ya exista
+    const res = await fetch("/api/inventario", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        producto: newProduct.name,
+        categoria: newProduct.category,
+        precio: newProduct.price,
+        stock: newProduct.stock,
+        descripcion: newProduct.description,
+      }),
+    });
+    if (res.ok) {
+      const added = await res.json();
+      setMovements((prev) => [added, ...prev]);
+      // Agrupa productos para la tabla principal
+      setProducts((prev) => {
+        const exists = prev.find(p => p.producto === added.producto);
+        if (exists) {
+          return prev.map(p =>
+            p.producto === added.producto
+              ? { ...p, stock: Number(p.stock) + Number(added.stock) }
+              : p
+          );
+        } else {
+          return [added, ...prev];
+        }
       });
-      if (res.ok) {
-        const updated = await res.json();
-        setProducts((prev) =>
-          prev.map((p) => (p.id === updated.id ? updated : p))
-        );
-        setIsProductDialogOpen(false);
-        setNewProduct({
-          name: "",
-          category: "",
-          price: "",
-          stock: "",
-          description: "",
-        });
-      }
-    } else {
-      // Producto nuevo
-      const res = await fetch("/api/inventario", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          producto: newProduct.name,
-          categoria: newProduct.category,
-          precio: newProduct.price,
-          stock: newProduct.stock,
-          descripcion: newProduct.description,
-        }),
+      setIsProductDialogOpen(false);
+      setNewProduct({
+        name: "",
+        category: "",
+        price: "",
+        stock: "",
+        description: "",
       });
-      if (res.ok) {
-        const added = await res.json();
-        setProducts((prev) => [added, ...prev]);
-        setIsProductDialogOpen(false);
-        setNewProduct({
-          name: "",
-          category: "",
-          price: "",
-          stock: "",
-          description: "",
-        });
-      }
     }
   }
 
@@ -390,9 +375,17 @@ export default function inventario() {
                         variant="outline"
                         size="sm"
                         title="Ver producto"
-                        onClick={() => {
+                        onClick={async () => {
                           setSelectedProduct(product);
                           setViewDialogOpen(true);
+                          // Trae el historial individual de este producto
+                          const res = await fetch(`/api/inventario/historial/${encodeURIComponent(product.producto)}`);
+                          if (res.ok) {
+                            const history = await res.json();
+                            setProductHistory(history);
+                          } else {
+                            setProductHistory([]);
+                          }
                         }}
                       >
                         <Eye className="w-4 h-4" />
@@ -552,9 +545,12 @@ export default function inventario() {
               {/* Puedes agregar más campos si lo deseas */}
               <hr className="my-2" />
               <div>
-                <b>Últimos productos agregados:</b>
+                <b>Altas de este producto:</b>
                 <div className="max-h-40 overflow-y-auto mt-2 border rounded p-2 bg-gray-50">
-                  {movements
+                  {productHistory.length === 0 && (
+                    <div className="text-xs text-gray-400">No hay registros.</div>
+                  )}
+                  {productHistory
                     .filter(p => p.fecha_agregado)
                     .sort((a, b) => new Date(b.fecha_agregado) - new Date(a.fecha_agregado))
                     .slice(0, 5)
@@ -564,9 +560,12 @@ export default function inventario() {
                         <div className="text-xs text-gray-500">
                           {new Date(p.fecha_agregado).toLocaleString()}
                         </div>
+                        <div className="text-xs text-purple-700">
+                          Stock agregado: <b>{p.stock}</b>
+                        </div>
                       </div>
                     ))}
-                  {movements.filter(p => p.fecha_agregado).length > 5 && (
+                  {productHistory.filter(p => p.fecha_agregado).length > 5 && (
                     <div className="text-center text-xs text-gray-400 mt-2">Desplázate para ver más...</div>
                   )}
                 </div>
