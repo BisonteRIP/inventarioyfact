@@ -34,6 +34,23 @@ export async function openDb() {
       estado TEXT NOT NULL,
       fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+    
+      CREATE TABLE IF NOT EXISTS facturas (
+      id TEXT PRIMARY KEY,
+      cliente_id TEXT,
+      fecha TEXT,
+      total REAL,
+      estado TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS factura_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      factura_id TEXT,
+      producto_id TEXT,
+      nombre TEXT,
+      precio REAL,
+      cantidad INTEGER
+    );
   `);
 
   return db;
