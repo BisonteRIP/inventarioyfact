@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
           <div className="container mx-auto p-6">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Cuatro Catros</h1>
-              <p className="text-gray-600">Sistema de Inventario y Facturacion</p>
+              <p className="text-gray-600">Sistema de Inventario / Facturacion</p>
             </div>
             <MenuBar />
           </div>
